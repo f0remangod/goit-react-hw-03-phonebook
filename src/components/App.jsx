@@ -11,6 +11,19 @@ export class App extends React.Component {
     filter: '',
   };
 
+  componentDidUpdate(_, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
+  componentDidMount() {
+    const parsedContacts = JSON.parse(localStorage.getItem('contacts'));
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
   handleFilterChange = event => {
     const { value } = event.currentTarget;
     this.setState({
@@ -53,20 +66,24 @@ export class App extends React.Component {
           ></PhonebookForm>
         </Section>
 
-        <Section title="Filter contacts">
-          <Filter
-            onChange={this.handleFilterChange}
-            value={filter}
-            onClick={this.clearFilterField}
-          ></Filter>
-        </Section>
+        {contacts.length > 0 && (
+          <>
+            <Section title="Filter contacts">
+              <Filter
+                onChange={this.handleFilterChange}
+                value={filter}
+                onClick={this.clearFilterField}
+              ></Filter>
+            </Section>
 
-        <Section title="Saved contacts">
-          <ContactsList
-            filteredContacts={this.getFilteredContacts()}
-            onDelete={this.deleteContact}
-          ></ContactsList>
-        </Section>
+            <Section title="Saved contacts">
+              <ContactsList
+                filteredContacts={this.getFilteredContacts()}
+                onDelete={this.deleteContact}
+              ></ContactsList>
+            </Section>
+          </>
+        )}
       </>
     );
   }
